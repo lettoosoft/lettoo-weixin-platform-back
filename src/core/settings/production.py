@@ -21,7 +21,7 @@ def get_env_setting(setting):
 
 ########## HOST CONFIGURATION
 # See: https://docs.djangoproject.com/en/1.5/releases/1.5/#allowed-hosts-required-in-production
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['121.40.126.220']
 ########## END HOST CONFIGURATION
 
 ########## EMAIL CONFIGURATION
@@ -51,13 +51,27 @@ SERVER_EMAIL = EMAIL_HOST_USER
 ########## END EMAIL CONFIGURATION
 
 ########## DATABASE CONFIGURATION
-DATABASES = {}
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': get_env_setting('DB_NAME'),
+        'USER': get_env_setting('DB_USER'),
+        'PASSWORD': get_env_setting('DB_PASSWORD'),
+        'HOST': get_env_setting('DB_HOST'),
+        'PORT': get_env_setting('PORT'),
+    }
+}
 ########## END DATABASE CONFIGURATION
 
 
 ########## CACHE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#caches
-CACHES = {}
+# TODO need to change this later
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
+}
 ########## END CACHE CONFIGURATION
 
 
