@@ -260,8 +260,5 @@ SOUTH_TESTS_MIGRATE = False
 
 ENCRYPTED_FIELDS_KEYDIR = normpath(join(SITE_ROOT, 'fieldkeys'))
 
-CORS_URLS_REGEX = r'^/api/.*$'
 
-CORS_ORIGIN_WHITELIST = (
-        'localhost',
-    )
+CORS_ORIGIN_ALLOW_ALL = True
