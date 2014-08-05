@@ -158,6 +158,7 @@ TEMPLATE_DIRS = (
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#middleware-classes
 MIDDLEWARE_CLASSES = (
     # Default Django middleware.
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -194,6 +195,7 @@ DJANGO_APPS = (
 
 # Apps specific for this project go here.
 LOCAL_APPS = (
+    'corsheaders',
     'tastypie',
     'commons',
     'account',
@@ -257,3 +259,9 @@ SOUTH_TESTS_MIGRATE = False
 ########## END SOUTH CONFIGURATION
 
 ENCRYPTED_FIELDS_KEYDIR = normpath(join(SITE_ROOT, 'fieldkeys'))
+
+CORS_URLS_REGEX = r'^/api/.*$'
+
+CORS_ORIGIN_WHITELIST = (
+        'localhost',
+    )

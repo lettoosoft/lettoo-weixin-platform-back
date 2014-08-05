@@ -10,3 +10,4 @@ jsonfield
 django-encrypted-fields
 requests
 PILLOW
+django-cors-headers
