@@ -16,7 +16,7 @@ from account.models import EmailConfirmation
 from account.utils import send_reset_password_email
 from userprofile.models import AvatarPhoto
 from userprofile.utils import check_user_profile, handle_user_profile
-from socialaccount.models import GOOGLE, SocialApp, FACEBOOK, SocialToken, GooglePushNotification
+from socialaccount.models import GOOGLE, SocialApp, FACEBOOK, SocialToken
 from socialaccount.utils import GoogleAdapter, FacebookAdapter
 from ..utils import check_user
 from .base import MyBaseResource
@@ -110,9 +110,6 @@ class UserResource(MyBaseResource):
             user_provider_tokens = SocialToken.objects.filter(user=request.user, app__provider=provider)
             if user_provider_tokens:
                 user_provider_tokens.delete()
-
-            if provider == GOOGLE:
-                GooglePushNotification.objects.filter(user=request.user).delete()
 
             response_data = {'status': "success"}
 
