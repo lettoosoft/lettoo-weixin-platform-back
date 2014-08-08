@@ -100,7 +100,19 @@ class UserResource(MyBaseResource):
 
             url(r'^(?P<resource_name>user)/disconnect/(?P<provider>\w+)/$',
                 self.wrap_view('disconnect_socialaccount'), name='disconnect_socialaccount'),
+
+            url(r'^me/$',
+                self.wrap_view('me'), name='api_me'),
         ]
+
+    def me(self, request, **kwargs):
+        self.method_check(request, allowed=['post'])
+
+        apikey_auth = ApiKeyAuthentication()
+        if apikey_auth.is_authenticated(request) == True:
+            return self.generate_response(request, request.user)
+        else:
+            return self.create_response(request, {}, HttpUnauthorized)
 
     def disconnect_socialaccount(self, request, provider, **kwargs):
         self.method_check(request, allowed=['post'])
