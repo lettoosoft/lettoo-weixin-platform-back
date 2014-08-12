@@ -1,8 +1,11 @@
 import hashlib
 import random
+from django.conf import settings
 
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.core.mail import EmailMessage
 from django.core.urlresolvers import reverse
+from django.template.loader import render_to_string
 from django.utils.http import int_to_base36
 
 
@@ -27,9 +30,16 @@ def send_reset_password_email(user, request):
     url = request.build_absolute_uri(path)
     context = {'password_reset_url': url}
     subject = '%s Reset your password' % '[Calvin]'
-    send_mail('email/forget_password.html', subject, user.email, context)
+    send_mail('account/email/forget_password.html', subject, user.email, context)
 
 
-def send_mail(template, subject, to_email, context):
-    # TODO
-    pass
+def send_mail(email_template, subject, to_email, ctx):
+    html_content = render_to_string(email_template, ctx)
+    message = EmailMessage(
+        subject=subject,
+        body=html_content,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to=[to_email, ]
+    )
+    message.content_subtype = 'html'
+    message.send(fail_silently=True)

@@ -77,7 +77,7 @@ class EmailConfirmation(TimeStampedModel):
         }
         email_template = 'email/signup_with_email.html'
         current_site = Site.objects.get_current()
-        subject = '%s confirm your email' % '[Calvin]'
+        subject = u'请重置你的密码'
         send_mail(email_template,
                   subject,
                   self.email,
