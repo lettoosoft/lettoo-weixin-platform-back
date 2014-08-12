@@ -29,7 +29,7 @@ def send_reset_password_email(user, request):
                                key=temp_key))
     url = request.build_absolute_uri(path)
     context = {'password_reset_url': url}
-    subject = '%s Reset your password' % '[Calvin]'
+    subject = 'Reset your password'
     send_mail('account/email/forget_password.html', subject, user.email, context)
 
 
