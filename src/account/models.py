@@ -93,7 +93,7 @@ class EmailConfirmation(TimeStampedModel):
 
 def send_password_changed_email(sender, request, user, **kwargs):
     send_mail(
-        email_template='email/password_changed.html',
+        email_template='account/password_changed.html',
         subject='Your password has been changed',
         to_email=user.email,
         ctx={})
