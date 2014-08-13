@@ -75,9 +75,9 @@ class EmailConfirmation(TimeStampedModel):
         ctx = {
             'activate_url': activate_url,
         }
-        email_template = 'email/signup_with_email.html'
+        email_template = 'account/email/email_confirmation.html'
         current_site = Site.objects.get_current()
-        subject = 'Reset password'
+        subject = 'Please confirm your email'
         send_mail(email_template,
                   subject,
                   self.email,
