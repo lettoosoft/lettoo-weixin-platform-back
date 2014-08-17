@@ -34,7 +34,7 @@ def weixin(request, user_id, token):
             if request.method == 'GET':
                 return HttpResponse(echostr)
             else:
-                handle_weixin_request(request, public_account)
+                return handle_weixin_request(request, public_account)
 
     return HttpResponse('error')
 
