@@ -6,6 +6,7 @@ import time
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
 from .models import Message, Event, PublicAccount
 
@@ -60,18 +61,11 @@ def handle_weixin_request(request, public_account):
             xml_content=xml_string
         )
         event.save()
+        return HttpResponse('')
 
     else:
         msg_id = xml.find('MsgId').text
         content = xml.find('Content').text
-
-        xml_string = '''<xml>
-<ToUserName><![CDATA[%s]]></ToUserName>
-<FromUserName><![CDATA[%s]]></FromUserName>
-<CreateTime>%d</CreateTime>
-<MsgType><![CDATA[text]]></MsgType>
-<Content><![CDATA[%s]]></Content>
-</xml>''' % (from_user_name, to_user_name, int(time.mktime(datetime.datetime.now().timetuple())),  content)
 
         message = Message(
             public_account = public_account,
@@ -83,6 +77,12 @@ def handle_weixin_request(request, public_account):
             xml_content=xml_string
         )
         message.save()
-    print xml_string
 
-    return HttpResponse(xml_string)
+        context = {
+            'ToUserName': from_user_name,
+            'FromUserName': to_user_name,
+            'CreateTime': create_time,
+            'Content': content
+        }
+
+        return HttpResponse(render_to_string('weixin/reply_text.xml', context))
