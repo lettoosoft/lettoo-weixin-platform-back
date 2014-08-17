@@ -5,13 +5,9 @@ import time
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render_to_response
-from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
 from .models import Message, Event, PublicAccount
 
-import logging
-
-logger = logging.Logger(__name__)
 
 @csrf_exempt
 def weixin(request, user_id, token):
@@ -55,7 +51,7 @@ def handle_weixin_request(request, public_account):
     if msg_type == 'event':
         event_type = xml.find('Event').text
         event = Event(
-            public_account = public_account,
+            public_account=public_account,
             to_user_name=to_user_name,
             from_user_name=from_user_name,
             create_time=create_time,
@@ -70,7 +66,7 @@ def handle_weixin_request(request, public_account):
         content = xml.find('Content').text
 
         message = Message(
-            public_account = public_account,
+            public_account=public_account,
             to_user_name=to_user_name,
             from_user_name=from_user_name,
             create_time=create_time,
