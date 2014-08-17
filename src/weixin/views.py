@@ -83,5 +83,6 @@ def handle_weixin_request(request, public_account):
             xml_content=xml_string
         )
         message.save()
+    print xml_string
 
     return HttpResponse(xml_string)
