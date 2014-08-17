@@ -61,6 +61,16 @@ def handle_weixin_request(request, public_account):
 
     else:
         msg_id = xml.find('MsgId').text
+        content = xml.find('Content').text
+
+        xml_string = '''<xml>
+<ToUserName><![CDATA[%s]]></ToUserName>
+<FromUserName><![CDATA[%s]]></FromUserName>
+<CreateTime>12345678</CreateTime>
+<MsgType><![CDATA[text]]></MsgType>
+<Content><![CDATA[%s]]></Content>
+</xml>''' % (from_user_name, to_user_name, content)
+
         message = Message(
             public_account = public_account,
             to_user_name=to_user_name,
@@ -72,4 +82,4 @@ def handle_weixin_request(request, public_account):
         )
         message.save()
 
-    return HttpResponse('success')
+    return HttpResponse(xml_string, content_type='application/xhtml+xml')
