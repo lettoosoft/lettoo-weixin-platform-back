@@ -9,6 +9,9 @@ from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
 from .models import Message, Event, PublicAccount
 
+import logging
+
+logger = logging.Logger(__name__)
 
 @csrf_exempt
 def weixin(request, user_id, token):
@@ -84,4 +87,7 @@ def handle_weixin_request(request, public_account):
             'Content': content
         }
 
-        return HttpResponse(render_to_string('weixin/reply_text.xml', context))
+        reply_xml_string = render_to_string('weixin/reply_text.xml', context)
+        logger.info(reply_xml_string)
+
+        return HttpResponse(reply_xml_string)
