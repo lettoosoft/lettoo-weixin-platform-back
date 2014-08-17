@@ -71,7 +71,7 @@ def handle_weixin_request(request, public_account):
 <CreateTime>%d</CreateTime>
 <MsgType><![CDATA[text]]></MsgType>
 <Content><![CDATA[%s]]></Content>
-</xml>''' % (from_user_name, to_user_name, int(time.mktime(datetime.datetime.now())),  content)
+</xml>''' % (from_user_name, to_user_name, int(time.mktime(datetime.datetime.now().timetuple())),  content)
 
         message = Message(
             public_account = public_account,
