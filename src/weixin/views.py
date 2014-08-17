@@ -1,6 +1,5 @@
 import hashlib
 import xml.etree.ElementTree as ET
-import datetime
 import time
 
 from django.contrib.auth.models import User
@@ -81,7 +80,7 @@ def handle_weixin_request(request, public_account):
         context = {
             'ToUserName': from_user_name,
             'FromUserName': to_user_name,
-            'CreateTime': create_time,
+            'CreateTime': str(int(time.time())),
             'Content': content
         }
 
