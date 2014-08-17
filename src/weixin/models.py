@@ -17,7 +17,7 @@ class PublicAccount(TimeStampedModel):
     user = models.ForeignKey(User)
     type = models.CharField(choices=WEIXIN_OPENACOUNT_TYPES, default='subscribe', max_length=10)
     title = models.CharField(max_length=255)
-    winxin_id = models.CharField(max_length=255)
+    weixin_id = models.CharField(max_length=255)
     thumbnail_url = models.URLField(blank=True, null=True)
     callback_url = models.URLField()
     token = models.CharField(max_length=255)
