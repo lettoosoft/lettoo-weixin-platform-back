@@ -1,5 +1,7 @@
 import hashlib
 import xml.etree.ElementTree as ET
+import datetime
+import time
 
 from django.contrib.auth.models import User
 from django.http import HttpResponse
@@ -66,10 +68,10 @@ def handle_weixin_request(request, public_account):
         xml_string = '''<xml>
 <ToUserName><![CDATA[%s]]></ToUserName>
 <FromUserName><![CDATA[%s]]></FromUserName>
-<CreateTime>12345678</CreateTime>
+<CreateTime>%d</CreateTime>
 <MsgType><![CDATA[text]]></MsgType>
 <Content><![CDATA[%s]]></Content>
-</xml>''' % (from_user_name, to_user_name, content)
+</xml>''' % (from_user_name, to_user_name, int(time.mktime(datetime.datetime.now())),  content)
 
         message = Message(
             public_account = public_account,
@@ -82,4 +84,4 @@ def handle_weixin_request(request, public_account):
         )
         message.save()
 
-    return HttpResponse(xml_string, content_type='application/xhtml+xml')
+    return HttpResponse(xml_string)
