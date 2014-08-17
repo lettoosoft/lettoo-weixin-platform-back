@@ -201,6 +201,7 @@ LOCAL_APPS = (
     'account',
     'socialaccount',
     'userprofile',
+    'weixin',
     'api',
 )
 
