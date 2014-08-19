@@ -1,11 +1,14 @@
 # -*- coding:utf-8 -*-
-
+from django.conf import settings
+import os
 import json
 import urllib
 import urllib2
 import cookielib
 import hashlib
 import zlib
+
+from pyquery import PyQuery as pq
 
 import re
 
@@ -74,6 +77,55 @@ class Weixin(object):
             return True
         else:
             raise WeixinException(err_msg=err_msg, ret=ret)
+
+    def get_user_info(self):
+        url = 'https://mp.weixin.qq.com/cgi-bin/settingpage?t=setting/index&action=index&token=%s&lang=zh_CN' % self.token
+        repo = self.opener.open(url)
+        html = repo.read()
+        if repo.headers.get('Content-Encoding', '') == 'deflate':
+            decompress = zlib.decompressobj(
+                -zlib.MAX_WBITS
+            )
+            html = decompress.decompress(html)
+            html += decompress.flush()
+        print html
+        d = pq(html)
+        account_settings = d.find('li.account_setting_item')
+        dict = {}
+        for item in account_settings:
+            account_setting_item = pq(item)
+            h4 = account_setting_item.find('h4')
+            name = h4.html().strip()
+            value = account_setting_item.find('div.meta_content').html().strip()
+            key = name
+            if name == u'名称':
+                key = 'title'
+            elif name == u'微信号':
+                key = 'weixin_id'
+                value = pq(value).html().strip()
+            elif name == u'头像':
+                key = 'thumbnail_url'
+                value = self.base_url + pq(value).attr('src')
+            elif name == u'二维码':
+                value = self.base_url + pq(value).attr('href').split("&action=download")[0]
+                #open('b.jpg', 'wb').write(self.opener.open(value).read())
+            elif name == u'原始ID':
+                value = pq(value).html().strip()
+            elif name == u'类型':
+                key = 'type'
+                if value == u'订阅号':
+                    value = 'subscribe'
+                else:
+                    value = 'service'
+            else:
+                pass
+
+            dict[key] = value
+
+        open('%s/%s.jpg' % (settings.MEDIA_ROOT, dict['weixin_id']), 'wb').write(self.opener.open(dict['thumbnail_url']).read())
+        dict['thumbnail_url'] = '/media/%s.jpg' % dict['weixin_id']
+        print dict
+        return dict
 
     def set_url_token(self, url, callback_token):
         url = 'https://mp.weixin.qq.com/advanced/advanced?action=interface&t=advanced/interface&token=%s&lang=zh_CN' % self.token

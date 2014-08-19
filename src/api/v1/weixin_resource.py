@@ -1,11 +1,14 @@
 from uuid import uuid4
 
+from django.conf.urls import url
 from tastypie import fields
 from tastypie.authentication import MultiAuthentication, SessionAuthentication, ApiKeyAuthentication
 from tastypie.authorization import Authorization
 from tastypie.exceptions import Unauthorized
+from tastypie.http import HttpUnauthorized, HttpBadRequest
 from tastypie.throttle import CacheThrottle
 from weixin.models import PublicAccount
+from weixin.utils import Weixin
 from .base import MyBaseResource
 from .user import UserResource
 
@@ -88,6 +91,42 @@ class PublicAccountAuthorization(Authorization):
 class PublicAccountResource(MyBaseResource):
     user = fields.ForeignKey(UserResource, 'user', full=True, readonly=True, null=True)
     apps = fields.ApiField('apps', null=True, readonly=True)
+
+    def prepend_urls(self):
+        return [
+            url(r'^publicaccount/auto/$',
+                self.wrap_view('auto'), name='api_weixin_auto'),
+        ]
+
+    def auto(self, request, **kwargs):
+        self.method_check(request, allowed=['post'])
+
+        apikey_auth = ApiKeyAuthentication()
+        if apikey_auth.is_authenticated(request) == True:
+            data = self.deserialize(request, request.body,
+                                    format=request.META.get('CONTENT_TYPE', 'application/json'))
+            username = data.get('username', None)
+            password = data.get('password', None)
+            try:
+                w = Weixin(username, password)
+                w.login()
+                user_dict = w.get_user_info()
+                public_account = PublicAccount.objects.get_or_create(
+                    user=request.user,
+                    type=user_dict['type'],
+                    title=user_dict['title'],
+                    weixin_id=user_dict['weixin_id'],
+                    thumbnail_url=request.build_absolute_uri(user_dict['thumbnail_url'])
+                )[0]
+                public_account.save()
+                bundle = self.build_bundle(obj=public_account, request=request)
+                bundle = self.full_dehydrate(bundle)
+                return self.create_response(request, bundle)
+            except Exception as e:
+                return self.obj_create(request, {}, HttpBadRequest)
+
+        else:
+            return self.create_response(request, {}, HttpUnauthorized)
 
     class Meta:
         always_return_data = True
