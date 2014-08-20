@@ -93,8 +93,8 @@ class Weixin(object):
         for item in account_settings:
             account_setting_item = pq(item)
             h4 = account_setting_item.find('h4')
-            name = h4.html().strip()
-            value = account_setting_item.find('div.meta_content').html().strip()
+            name = unicode(h4.html().strip(), 'utf-8')
+            value = unicode(account_setting_item.find('div.meta_content').html().strip(), 'utf-8')
             key = name
             if name == u'名称':
                 key = 'title'
