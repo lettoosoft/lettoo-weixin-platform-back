@@ -62,7 +62,6 @@ class Weixin(object):
         login_params = urllib.urlencode(param)
         logged_in_page = self.opener.open(self.login_auth_url, login_params)
         data = json.loads(logged_in_page.read())
-        print data
         '''
         {u'base_resp': {u'err_msg': u'ok', u'ret': 0}, u'redirect_url': u'/cgi-bin/home?t=home/index&lang=zh_CN&token=1819360945'}
         {u'base_resp': {u'err_msg': u'acct/password error', u'ret': -23}}
@@ -88,7 +87,6 @@ class Weixin(object):
             )
             html = decompress.decompress(html)
             html += decompress.flush()
-        print html
         d = pq(html)
         account_settings = d.find('li.account_setting_item')
         dict = {}
@@ -124,7 +122,6 @@ class Weixin(object):
 
         open('%s/%s.jpg' % (settings.MEDIA_ROOT, dict['weixin_id']), 'wb').write(self.opener.open(dict['thumbnail_url']).read())
         dict['thumbnail_url'] = '/media/%s.jpg' % dict['weixin_id']
-        print dict
         return dict
 
     def set_url_token(self, url, callback_token):
@@ -139,7 +136,6 @@ class Weixin(object):
             html += decompress.flush()
         pattern = 'operation_seq:(.*?)"(.+?)"'
         operation_seq = re.findall(pattern, html)[0][1]
-        print operation_seq
 
         url = 'https://mp.weixin.qq.com/advanced/callbackprofile?t=ajax-response&token=%s&lang=zh_CN' % self.token
         param = urllib.urlencode(
@@ -149,4 +145,3 @@ class Weixin(object):
                 'operation_seq': operation_seq}
         )
         a = self.opener.open(url, param)
-        print a.read()
