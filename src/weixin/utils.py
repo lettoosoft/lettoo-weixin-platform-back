@@ -1,6 +1,4 @@
 # -*- coding:utf-8 -*-
-from django.conf import settings
-import os
 import json
 import urllib
 import urllib2
@@ -8,8 +6,8 @@ import cookielib
 import hashlib
 import zlib
 
+from django.conf import settings
 from pyquery import PyQuery as pq
-
 import re
 
 
@@ -87,14 +85,15 @@ class Weixin(object):
             )
             html = decompress.decompress(html)
             html += decompress.flush()
+        html = unicode(html, 'utf-8')
         d = pq(html)
         account_settings = d.find('li.account_setting_item')
         dict = {}
         for item in account_settings:
             account_setting_item = pq(item)
             h4 = account_setting_item.find('h4')
-            name = unicode(h4.html().strip(), 'utf-8')
-            value = unicode(account_setting_item.find('div.meta_content').html().strip(), 'utf-8')
+            name = h4.html().strip()
+            value = account_setting_item.find('div.meta_content').html().strip()
             key = name
             if name == u'名称':
                 key = 'title'
@@ -106,7 +105,7 @@ class Weixin(object):
                 value = self.base_url + pq(value).attr('src')
             elif name == u'二维码':
                 value = self.base_url + pq(value).attr('href').split("&action=download")[0]
-                #open('b.jpg', 'wb').write(self.opener.open(value).read())
+                # open('b.jpg', 'wb').write(self.opener.open(value).read())
             elif name == u'原始ID':
                 value = pq(value).html().strip()
             elif name == u'类型':
@@ -120,7 +119,8 @@ class Weixin(object):
 
             dict[key] = value
 
-        open('%s/%s.jpg' % (settings.MEDIA_ROOT, dict['weixin_id']), 'wb').write(self.opener.open(dict['thumbnail_url']).read())
+        open('%s/%s.jpg' % (settings.MEDIA_ROOT, dict['weixin_id']), 'wb').write(
+            self.opener.open(dict['thumbnail_url']).read())
         dict['thumbnail_url'] = '/media/%s.jpg' % dict['weixin_id']
         return dict
 
@@ -145,3 +145,9 @@ class Weixin(object):
                 'operation_seq': operation_seq}
         )
         a = self.opener.open(url, param)
+
+
+if __name__ == '__main__':
+    w = Weixin('lettoosoft', 'huzhiwei')
+    w.login()
+    w.get_user_info()
