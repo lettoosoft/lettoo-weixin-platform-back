@@ -144,10 +144,26 @@ class Weixin(object):
                 'callback_token': callback_token,
                 'operation_seq': operation_seq}
         )
+        self.opener.addheaders = [
+            ('Accept', 'application/json, text/javascript, */*; q=0.01'),
+            ('Accept-Encoding', 'gzip,deflate,sdch'),
+            ('Accept-Language', 'zh-CN,zh;q=0.8,ar;q=0.6,en;q=0.4'),
+            ('Connection', 'keep-alive'),
+            # ('Content-Length', '81'),
+            ('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8'),
+            ('Host', 'mp.weixin.qq.com'),
+            ('Origin', 'https://mp.weixin.qq.com'),
+            ('Referer', 'Referer:https://mp.weixin.qq.com/advanced/advanced?action=interface&t=advanced/interface&token=%s&lang=zh_CN' % self.token),
+            ('User-Agent',
+             'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36'),
+            ('X-Requested-With', 'XMLHttpRequest'),
+        ]
         a = self.opener.open(url, param)
+        print a.read()
 
 
 if __name__ == '__main__':
     w = Weixin('lettoosoft', 'huzhiwei')
     w.login()
-    w.get_user_info()
+    #w.get_user_info()
+    w.set_url_token('http://121.40.126.220/weixin/58/e00b7e2266444a6fa7886642b5f8224c/', 'e00b7e2266444a6fa7886642b5f8224c')
