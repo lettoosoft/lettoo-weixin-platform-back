@@ -79,13 +79,13 @@ class Weixin(object):
         url = 'https://mp.weixin.qq.com/cgi-bin/settingpage?t=setting/index&action=index&token=%s&lang=zh_CN' % self.token
         repo = self.opener.open(url)
         html = repo.read()
-        if repo.headers.get('Content-Encoding', '') == 'deflate':
-            decompress = zlib.decompressobj(
-                -zlib.MAX_WBITS
-            )
-            html = decompress.decompress(html)
-            html += decompress.flush()
-        html = unicode(html, 'utf-8')
+        #if repo.headers.get('Content-Encoding', '') == 'deflate':
+        decompress = zlib.decompressobj(
+            16+zlib.MAX_WBITS
+        )
+        html = decompress.decompress(html)
+        html += decompress.flush()
+        #html = unicode(html, 'utf-8')
         d = pq(html)
         account_settings = d.find('li.account_setting_item')
         dict = {}
@@ -119,9 +119,10 @@ class Weixin(object):
 
             dict[key] = value
 
-        open('%s/%s.jpg' % (settings.MEDIA_ROOT, dict['weixin_id']), 'wb').write(
-            self.opener.open(dict['thumbnail_url']).read())
-        dict['thumbnail_url'] = '/media/%s.jpg' % dict['weixin_id']
+        if dict.get('weixin_id', None):
+            open('%s/%s.jpg' % (settings.MEDIA_ROOT, dict['weixin_id']), 'wb').write(
+                self.opener.open(dict['thumbnail_url']).read())
+            dict['thumbnail_url'] = '/media/%s.jpg' % dict['weixin_id']
         return dict
 
     def set_url_token(self, url, callback_token):
@@ -163,7 +164,7 @@ class Weixin(object):
 
 
 if __name__ == '__main__':
-    w = Weixin('lettoosoft', 'huzhiwei')
-    w.login()
-    #w.get_user_info()
-    w.set_url_token('http://121.40.126.220/weixin/58/e00b7e2266444a6fa7886642b5f8224c/', 'e00b7e2266444a6fa7886642b5f8224c')
+    w = Weixin('zhiwehu@gmail.com', 'huzhiwei')
+    if w.login():
+        w.get_user_info()
+    #w.set_url_token('http://121.40.126.220/weixin/58/e00b7e2266444a6fa7886642b5f8224c/', 'e00b7e2266444a6fa7886642b5f8224c')
