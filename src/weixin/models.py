@@ -5,7 +5,6 @@ from uuid import uuid4
 from attachment.models import AttachmentRelationship
 from django.contrib.auth.models import User
 from django.db import models
-from django.http import HttpRequest
 from django.utils.translation import gettext_lazy as _
 from model_utils.models import TimeStampedModel
 from taggit.managers import TaggableManager
@@ -32,13 +31,12 @@ class PublicAccount(TimeStampedModel):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
-        if self.token == None:
+        if not self.token:
             token = uuid4().hex
             self.token = token
-        if self.callback_url == None:
+        if not self.callback_url:
             callback_url = '/weixin/%d/%s/' % (self.user.id, token)
-            request = HttpRequest()
-            self.callback_url =request.build_absolute_uri(callback_url)
+            self.callback_url = callback_url
         super(PublicAccount, self).save(force_insert, force_update, using, update_fields)
 
 

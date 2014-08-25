@@ -142,6 +142,8 @@ class PublicAccountResource(MyBaseResource):
                     thumbnail_url=request.build_absolute_uri(user_dict['thumbnail_url'])
                 )[0]
                 public_account.save()
+                public_account.callback_url = request.build_absolute_uri(public_account.callback_url)
+                public_account.save()
                 bundle = self.build_bundle(obj=public_account, request=request)
                 bundle = self.full_dehydrate(bundle)
                 return self.create_response(request, bundle)
