@@ -85,7 +85,7 @@ class Weixin(object):
         )
         html = decompress.decompress(html)
         html += decompress.flush()
-        #html = unicode(html, 'utf-8')
+        html = unicode(html, 'utf-8')
         d = pq(html)
         account_settings = d.find('li.account_setting_item')
         dict = {}
