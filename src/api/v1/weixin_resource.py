@@ -1,4 +1,5 @@
 from uuid import uuid4
+from api.v1.weixinapp_resource import WeixinAppResource
 
 from django.conf.urls import url
 from tastypie import fields
@@ -7,7 +8,7 @@ from tastypie.authorization import Authorization
 from tastypie.exceptions import Unauthorized
 from tastypie.http import HttpUnauthorized, HttpBadRequest
 from tastypie.throttle import CacheThrottle
-from weixin.models import PublicAccount
+from weixin.models import PublicAccount, PublicAccountApp
 from weixin.utils import Weixin
 from .base import MyBaseResource
 from .user import UserResource
@@ -92,6 +93,28 @@ class PublicAccountResource(MyBaseResource):
     user = fields.ForeignKey(UserResource, 'user', full=True, readonly=True, null=True)
     apps = fields.ApiField('apps', null=True, readonly=True)
 
+    class Meta:
+        always_return_data = True
+        detail_allowed_methods = ['get', 'put', 'post', 'delete']
+        list_allowed_methods = ['get', 'post']
+        resource_name = 'publicaccount'
+        queryset = PublicAccount.objects.all().order_by('-created')
+        authentication = MultiAuthentication(SessionAuthentication(), ApiKeyAuthentication())
+        authorization = PublicAccountAuthorization()
+        excludes = ['modified']
+        ordering = ['created']
+        throttle = CacheThrottle(throttle_at=600)
+
+    def dehydrate_apps(self, bundle):
+        public_account_apps =  PublicAccountApp.objects.filter(public_account = bundle.obj)
+        result = []
+        for pa in public_account_apps:
+            app_resource = WeixinAppResource()
+            bundle = app_resource.build_bundle(obj=pa.app, request=bundle.request)
+            result.append(app_resource.full_dehydrate(bundle))
+
+        return result
+
     def prepend_urls(self):
         return [
             url(r'^publicaccount/auto/$',
@@ -127,18 +150,6 @@ class PublicAccountResource(MyBaseResource):
 
         else:
             return self.create_response(request, {}, HttpUnauthorized)
-
-    class Meta:
-        always_return_data = True
-        detail_allowed_methods = ['get', 'put', 'post', 'delete']
-        list_allowed_methods = ['get', 'post']
-        resource_name = 'publicaccount'
-        queryset = PublicAccount.objects.all().order_by('-created')
-        authentication = MultiAuthentication(SessionAuthentication(), ApiKeyAuthentication())
-        authorization = PublicAccountAuthorization()
-        excludes = ['modified']
-        ordering = ['created']
-        throttle = CacheThrottle(throttle_at=600)
 
     def obj_create(self, bundle, **kwargs):
         # contact = MiniContact.objects.get_or_create_contact(bundle.obj.event.creator, bundle.request.user.email)

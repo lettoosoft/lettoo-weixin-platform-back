@@ -12,3 +12,5 @@ requests
 PILLOW
 django-cors-headers
 pyquery
+django-taggit
+sorl-thumbnail

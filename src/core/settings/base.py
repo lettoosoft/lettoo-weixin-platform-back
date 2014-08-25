@@ -195,9 +195,13 @@ DJANGO_APPS = (
 
 # Apps specific for this project go here.
 LOCAL_APPS = (
+    'taggit',
+    'sorl.thumbnail',
     'corsheaders',
     'tastypie',
+
     'commons',
+    'attachment',
     'account',
     'socialaccount',
     'userprofile',
@@ -263,3 +267,7 @@ ENCRYPTED_FIELDS_KEYDIR = normpath(join(SITE_ROOT, 'fieldkeys'))
 
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+SOUTH_MIGRATION_MODULES = {
+    'taggit': 'taggit.south_migrations',
+}
