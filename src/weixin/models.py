@@ -66,6 +66,7 @@ class App(TimeStampedModel):
 class PublicAccountApp(TimeStampedModel):
     public_account = models.ForeignKey(PublicAccount)
     app = models.ForeignKey(App)
+    enabled = models.BooleanField(default=False)
 
     def __unicode__(self):
         return u'%s:%s' % (self.public_account, self.app)
