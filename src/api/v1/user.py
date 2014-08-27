@@ -101,6 +101,9 @@ class UserResource(MyBaseResource):
             url(r'^(?P<resource_name>user)/disconnect/(?P<provider>\w+)/$',
                 self.wrap_view('disconnect_socialaccount'), name='disconnect_socialaccount'),
 
+            url(r'^(?P<resource_name>user)/resend/$',
+                self.wrap_view('resend_confirmation'), name='resend_confirmation'),
+
             url(r'^me/$',
                 self.wrap_view('me'), name='api_me'),
         ]
@@ -162,6 +165,22 @@ class UserResource(MyBaseResource):
             email = data.get('email')
             user = User.objects.get(email=email)
             send_reset_password_email(user, request)
+            response_data = {'status': 'success'}
+            return HttpResponse(json.dumps(response_data), mimetype='application/json')
+        except Exception as e:
+            return self.create_response(request, {
+                'error': e.message,
+            }, HttpBadRequest)
+
+    def resend_confirmation(self, request, **kwargs):
+        self.method_check(request, allowed=['post'])
+
+        data = self.deserialize(request, request.body,
+                                format=request.META.get('CONTENT_TYPE', 'application/json'))
+        try:
+            email = data.get('email')
+            ec = EmailConfirmation.objects.get(email=email)
+            ec.send(request)
             response_data = {'status': 'success'}
             return HttpResponse(json.dumps(response_data), mimetype='application/json')
         except Exception as e:
