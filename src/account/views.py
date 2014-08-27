@@ -27,7 +27,7 @@ class ConfirmEmailView(TemplateResponseMixin, View):
             self.object.confirm(self.request)
         except Http404:
             self.object = None
-        return redirect("app/#/welcome/")
+        return redirect("/app/#/welcome/")
 
     def get_object(self, queryset=None):
         if queryset is None:
