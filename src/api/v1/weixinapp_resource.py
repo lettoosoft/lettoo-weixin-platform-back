@@ -44,6 +44,9 @@ class TagResource(ModelResource):
         queryset = Tag.objects.all()
         detail_allowed_methods = ['get', ]
         list_allowed_methods = ['get']
+        filtering = dict(
+            name=ALL,
+        )
 
 
 class WeixinAppResource(MyBaseResource):
@@ -64,7 +67,7 @@ class WeixinAppResource(MyBaseResource):
         throttle = CacheThrottle(throttle_at=600)
         filtering = dict(
             title=ALL,
-            keywords=ALL,
+            keywords=ALL_WITH_RELATIONS,
         )
 
 
