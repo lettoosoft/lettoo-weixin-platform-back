@@ -64,7 +64,7 @@ class WeixinAppResource(MyBaseResource):
         throttle = CacheThrottle(throttle_at=600)
         filtering = dict(
             title=ALL,
-            keywords=ALL_WITH_RELATIONS,
+            keywords=ALL,
         )
 
 
