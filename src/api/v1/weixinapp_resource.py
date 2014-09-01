@@ -39,7 +39,7 @@ class WeixinAppAuthorization(Authorization):
         return object_list
 
 
-class TagResource(ModelResource):
+class TagResource(MyBaseResource):
     class Meta:
         resource_name = 'keyword'
         queryset = Tag.objects.all()
