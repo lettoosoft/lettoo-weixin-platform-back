@@ -41,6 +41,7 @@ class WeixinAppAuthorization(Authorization):
 
 class TagResource(ModelResource):
     class Meta:
+        resource_name = 'keyword'
         queryset = Tag.objects.all()
         detail_allowed_methods = ['get', ]
         list_allowed_methods = ['get']
