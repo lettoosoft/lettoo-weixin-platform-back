@@ -52,7 +52,7 @@ class App(TimeStampedModel):
     price = models.FloatField(default=0.0)
     rate = models.FloatField(default=5.0)
     install_count = models.PositiveIntegerField(default=0)
-    keywords = TaggableManager()
+    keywords = TaggableManager(u'关键字')
     published = models.BooleanField(default=False)
 
     @property

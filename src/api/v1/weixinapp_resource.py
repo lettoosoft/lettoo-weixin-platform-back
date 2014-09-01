@@ -1,7 +1,10 @@
 from tastypie import fields
 from tastypie.authentication import MultiAuthentication, Authentication
 from tastypie.authorization import Authorization
+from tastypie.constants import ALL_WITH_RELATIONS, ALL
+from tastypie.resources import ModelResource
 from tastypie.throttle import CacheThrottle
+from taggit.models import Tag
 from weixin.models import App
 from .base import MyBaseResource
 from .user import UserResource
@@ -36,9 +39,17 @@ class WeixinAppAuthorization(Authorization):
         return object_list
 
 
+class TagResource(ModelResource):
+    class Meta:
+        queryset = Tag.objects.all()
+        detail_allowed_methods = ['get', ]
+        list_allowed_methods = ['get']
+
+
 class WeixinAppResource(MyBaseResource):
     creator = fields.ForeignKey(UserResource, 'user', full=True, readonly=True, null=True)
     screen_shots = fields.ApiField('screen_shots', null=True, readonly=True)
+    keywords = fields.ToManyField(TagResource, 'keywords', full=True)
 
     class Meta:
         always_return_data = True
@@ -51,9 +62,14 @@ class WeixinAppResource(MyBaseResource):
         excludes = ['modified']
         ordering = ['created']
         throttle = CacheThrottle(throttle_at=600)
+        filtering = dict(
+            title=ALL,
+            keywords=ALL_WITH_RELATIONS,
+        )
+
 
     def dehydrate_screen_shots(self, bundle):
-        attachments =  bundle.obj.attachments
+        attachments = bundle.obj.attachments
         for d in attachments:
             if not (d['url'].startswith('http://') or d['url'].startswith('https://')):
                 d['url'] = bundle.request.build_absolute_uri(d['url'])
